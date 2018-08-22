@@ -1,16 +1,24 @@
 require 'sinatra'
 
 before do
-  @losing_moves = { :rock => :paper, :paper => :scissors, :scissors => :rock }
-  @moves = @losing_moves.keys
+  content_type :txt
+  @winning_moves = { rock: :paper, paper: :scissors, scissors: :rock }
+  @moves = @winning_moves.keys
 end
 
 get '/:moves' do
-  computer_move = @moves.sample
+
   user_move = params[:moves].to_sym
+
+  if !@moves.include?(user_move)
+    halt 403, "You must throw one of the following: #{ @moves.map {|elem| elem.to_s} }"
+  end
+
+  computer_move = @moves.sample
+
   if user_move == computer_move
     output = "You drew with the computer."
-  elsif user_move == @losing_moves[computer_move]
+  elsif user_move == @winning_moves[computer_move]
     output = "You beat the computer."
   else
     output = "You lost to the compter."
